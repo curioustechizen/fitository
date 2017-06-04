@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StepStar</string>
+    <string name="permission_denied_quitting">Some required permissions were denied, quitting app</string>
+    <string name="ok">OK</string>
+</resources>

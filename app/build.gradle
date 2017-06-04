@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+def getApiKey(){
+    def Properties props = new Properties()
+    props.load(new FileInputStream(new File('app/.donotshare/secrets.properties')))
+    return props['awarenessApiKey']
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion buildToolsVersion
+    defaultConfig {
+        applicationId "in.kiranrao.fitository"
+        minSdkVersion 21
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [awarenessApiKey: getApiKey()]
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+    implementation "android.arch.persistence.room:runtime:$archRoomVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$archLifecycleVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$archRoomVersion"
+    implementation "com.google.android.gms:play-services-awareness:$playServicesVersion"
+    implementation "com.google.android.gms:play-services-fitness:$playServicesVersion"
+    implementation "ru.gildor.coroutines:kotlin-coroutines-retrofit:$retrofitCoroutinesVersion"
+
+    testImplementation 'junit:junit:4.12'
+
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+}
