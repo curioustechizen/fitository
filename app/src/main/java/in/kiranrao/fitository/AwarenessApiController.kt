@@ -4,18 +4,17 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.fence.FenceUpdateRequest
 import com.google.android.gms.awareness.fence.TimeFence
 import com.google.android.gms.common.api.GoogleApiClient
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 /**
  * Created by kiran on 28/5/17.
  */
 val FENCE_KEY_SOLAR_FENCE = "in.kiranrao.fitository.FENCE_KEY_SOLAR_FENCE"
-private val TAG = "AwarenessApiController"
 
 class AwarenessApiController(val context: Context, val googleApiClient: GoogleApiClient) {
 
@@ -29,7 +28,7 @@ class AwarenessApiController(val context: Context, val googleApiClient: GoogleAp
                 .updateFences(googleApiClient, FenceUpdateRequest.Builder().addFence(
                         FENCE_KEY_SOLAR_FENCE, solarFence, pendingIntent).build())
                 .setResultCallback { status ->
-                    Log.i(TAG,
+                    Timber.i(
                             if (status.isSuccess) "Sunset fence registered successfully"
                             else "Sunset fence could not be registered: ${status}")
                 }

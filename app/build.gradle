@@ -46,6 +46,9 @@ dependencies {
     implementation "com.google.android.gms:play-services-awareness:$playServicesVersion"
     implementation "com.google.android.gms:play-services-fitness:$playServicesVersion"
     implementation "ru.gildor.coroutines:kotlin-coroutines-retrofit:$retrofitCoroutinesVersion"
+    implementation "com.google.firebase:firebase-core:$playServicesVersion"
+    implementation "com.google.firebase:firebase-crash:$playServicesVersion"
+    implementation "com.jakewharton.timber:timber:$timberVersion"
 
     testImplementation 'junit:junit:4.12'
 
@@ -54,3 +57,5 @@ dependencies {
     })
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
 }
+
+apply plugin: 'com.google.gms.google-services'
