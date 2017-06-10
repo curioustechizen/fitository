@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 def getApiKey(){
     def Properties props = new Properties()
@@ -9,7 +9,7 @@ def getApiKey(){
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion buildToolsVersion
     defaultConfig {
         applicationId "in.kiranrao.fitository"
@@ -37,25 +37,39 @@ kotlin {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    //Support libs
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
-    implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+
+    //Architecture components
+    implementation "android.arch.lifecycle:runtime:$archLifecycleVersion"
+    implementation "android.arch.lifecycle:extensions:$archLifecycleVersion"
     implementation "android.arch.persistence.room:runtime:$archRoomVersion"
-    annotationProcessor "android.arch.lifecycle:compiler:$archLifecycleVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$archRoomVersion"
+    kapt "android.arch.lifecycle:compiler:$archLifecycleVersion"
+    kapt "android.arch.persistence.room:compiler:$archRoomVersion"
+
+    //Play services and firebase
     implementation "com.google.android.gms:play-services-awareness:$playServicesVersion"
     implementation "com.google.android.gms:play-services-fitness:$playServicesVersion"
-    implementation "ru.gildor.coroutines:kotlin-coroutines-retrofit:$retrofitCoroutinesVersion"
     implementation "com.google.firebase:firebase-core:$playServicesVersion"
     implementation "com.google.firebase:firebase-crash:$playServicesVersion"
+
+    //Other deps
     implementation "com.jakewharton.timber:timber:$timberVersion"
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+    implementation "ru.gildor.coroutines:kotlin-coroutines-retrofit:$retrofitCoroutinesVersion"
+    implementation "space.traversal.kapsule:kapsule-core:$kapsuleVersion"
+
 
     testImplementation 'junit:junit:4.12'
+
 
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

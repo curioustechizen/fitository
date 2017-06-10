@@ -1,12 +1,12 @@
 package `in`.kiranrao.fitository
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.Manifest.permission.*
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -22,12 +22,20 @@ import com.google.android.gms.fitness.Fitness
 import timber.log.Timber
 
 
-private val REQUEST_CODE_PLAYSERVICES_RESOLUTION = 1000
-private val PERMISSION_REQUEST_CODE_MULTIPLE = 1001
-
-
 class MainActivity : AppCompatActivity(),
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    companion object {
+        private val REQUEST_CODE_PLAYSERVICES_RESOLUTION = 1000
+        private val PERMISSION_REQUEST_CODE_MULTIPLE = 1001
+        private val COMMON_PERMISSIONS = arrayOf(
+                ACCESS_FINE_LOCATION,
+                WRITE_EXTERNAL_STORAGE,
+                "com.google.android.gms.permission.ACTIVITY_RECOGNITION")
+        private val PERMISSIONS_ARRAY =
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) COMMON_PERMISSIONS
+                else COMMON_PERMISSIONS + WAKE_LOCK
+    }
 
     private lateinit var googleApiClient: GoogleApiClient
     private var resolvingError = false
@@ -47,7 +55,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun refreshTodayTotals(v: View): Unit {
-        fitController.retrieveDailyTotals()
+        AwarenessJobIntentService.enqueueWork(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -81,7 +89,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun checkPermissions() {
-        if (hasAllPermissions(ACCESS_FINE_LOCATION)) {
+        if (hasAllPermissions(*PERMISSIONS_ARRAY)) {
+            Timber.plant(FileLogTree(applicationContext))
             startGooglePlayServices()
             return
         }
@@ -90,23 +99,23 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun hasAllPermissions(vararg permissions: String): Boolean {
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) return false
-        }
-        return true
+        return permissions.all { ContextCompat.checkSelfPermission(this, it) == PERMISSION_GRANTED }
     }
 
     private fun requestPermissions() {
+        Timber.i("Requesting permissions: ${PERMISSIONS_ARRAY.joinToString()}")
         ActivityCompat.requestPermissions(this,
-                arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE,"com.google.android.gms.permission.ACTIVITY_RECOGNITION"),
+                PERMISSIONS_ARRAY,
                 PERMISSION_REQUEST_CODE_MULTIPLE)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE_MULTIPLE ->
-                if (grantResults.all { it == PERMISSION_GRANTED }) startGooglePlayServices()
-                else showNotStartedMessage()
+                if (grantResults.all { it == PERMISSION_GRANTED }) {
+                    Timber.plant(FileLogTree(applicationContext))
+                    startGooglePlayServices()
+                } else showNotStartedMessage()
         }
     }
 
@@ -164,7 +173,7 @@ class MainActivity : AppCompatActivity(),
 
         } else {
             resolvingError = true
-            Timber.i("Google Play services connection failed. Cause: ${result.toString()}")
+            Timber.i("Google Play services connection failed. Cause: $result")
             showPlayServicesError(result)
         }
     }

@@ -14,15 +14,19 @@ import com.google.android.gms.fitness.data.DataType.TYPE_STEP_COUNT_DELTA
 import com.google.android.gms.fitness.data.Field
 import timber.log.Timber
 
-private val DATA_TYPES_TO_SUBSCRIBE = listOf(
-        TYPE_CALORIES_EXPENDED,
-        TYPE_STEP_COUNT_DELTA)
-
-private val NOTIFICATION_IDS_MAP = mapOf(
-        TYPE_CALORIES_EXPENDED.name to 2001,
-        TYPE_STEP_COUNT_DELTA.name to 2002)
 
 class FitController(val context: Context, val googleApiClient: GoogleApiClient) {
+
+    companion object {
+        private val DATA_TYPES_TO_SUBSCRIBE = listOf(
+                TYPE_CALORIES_EXPENDED,
+                TYPE_STEP_COUNT_DELTA)
+
+        private val NOTIFICATION_IDS_MAP = mapOf(
+                TYPE_CALORIES_EXPENDED.name to 2001,
+                TYPE_STEP_COUNT_DELTA.name to 2002)
+
+    }
 
     fun startRecordingFitnessData() {
         DATA_TYPES_TO_SUBSCRIBE.forEach { dataType -> subscribeToDataType(dataType) }
